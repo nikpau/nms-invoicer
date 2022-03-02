@@ -1,0 +1,3 @@
+botEnv/
+**__pycache__/**
+.env
