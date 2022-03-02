@@ -1,1 +1,90 @@
-{"title": {"type": "plain_text", "text": "Rechnung Einreichen", "emoji": true}, "submit": {"type": "plain_text", "text": "Einreichen", "emoji": true}, "type": "modal", "close": {"type": "plain_text", "text": "Abbrechen", "emoji": true}, "blocks": [{"type": "section", "text": {"type": "mrkdwn", "text": "Moin, ich bin dein Rechnungsbot! Du hast Geld f\u00fcr unseren Verein ausgegeben und willst es jetzt echt wieder haben? Na gut...\n\n Bitte gib unten an, f\u00fcr welches *Event* du das Geld vorgestreckt hast und deinen *Namen*:"}}, {"type": "divider"}, {"type": "section", "block_id": "event_name", "text": {"type": "mrkdwn", "text": "*Event*"}, "accessory": {"type": "static_select", "placeholder": {"type": "plain_text", "text": "Select an item", "emoji": true}, "options": [{"text": {"type": "plain_text", "text": "foo", "emoji": true}, "value": "value-0"}, {"text": {"type": "plain_text", "text": "bar", "emoji": true}, "value": "value-1"}, {"text": {"type": "plain_text", "text": "baz", "emoji": true}, "value": "value-2"}], "action_id": "static_select-action"}}, {"type": "section", "block_id": "event_date", "text": {"type": "mrkdwn", "text": "*Datum des Events*"}, "accessory": {"type": "datepicker", "initial_date": "1990-04-28", "placeholder": {"type": "plain_text", "text": "Select a date", "emoji": true}, "action_id": "datepicker-action"}}, {"type": "section", "block_id": "user", "text": {"type": "mrkdwn", "text": "*Mein Name*"}, "accessory": {"type": "users_select", "placeholder": {"type": "plain_text", "text": "Select a user", "emoji": true}, "action_id": "users_select-action"}}, {"type": "input", "block_id": "event_cost", "element": {"type": "plain_text_input", "action_id": "plain_text_input-action"}, "label": {"type": "plain_text", "text": "Rechnungbetrag aka Costa Quanta", "emoji": true}}]}
+{
+  "title": {
+    "type": "plain_text",
+    "text": "Rechnung Einreichen",
+    "emoji": true
+  },
+  "submit": { "type": "plain_text", "text": "Einreichen", "emoji": true },
+  "type": "modal",
+  "close": { "type": "plain_text", "text": "Abbrechen", "emoji": true },
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Moin, ich bin dein Rechnungsbot! Du hast Geld f\u00fcr unseren Verein ausgegeben und willst es jetzt echt wieder haben? Na gut...\n\n Bitte gib unten an, f\u00fcr welches *Event* du das Geld vorgestreckt hast und deinen *Namen*:"
+      }
+    },
+    { "type": "divider" },
+    {
+      "type": "section",
+      "block_id": "event_name",
+      "text": { "type": "mrkdwn", "text": "*Event*" },
+      "accessory": {
+        "type": "static_select",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select an item",
+          "emoji": true
+        },
+        "options": [
+          {
+            "text": { "type": "plain_text", "text": "foo", "emoji": true },
+            "value": "value-0"
+          },
+          {
+            "text": { "type": "plain_text", "text": "bar", "emoji": true },
+            "value": "value-1"
+          },
+          {
+            "text": { "type": "plain_text", "text": "baz", "emoji": true },
+            "value": "value-2"
+          }
+        ],
+        "action_id": "static_select-action"
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "event_date",
+      "text": { "type": "mrkdwn", "text": "*Datum des Events*" },
+      "accessory": {
+        "type": "datepicker",
+        "initial_date": "1990-04-28",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select a date",
+          "emoji": true
+        },
+        "action_id": "datepicker-action"
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "user",
+      "text": { "type": "mrkdwn", "text": "*Mein Name*" },
+      "accessory": {
+        "type": "users_select",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select a user",
+          "emoji": true
+        },
+        "action_id": "users_select-action"
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "event_cost",
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "plain_text_input-action"
+      },
+      "label": {
+        "type": "plain_text",
+        "text": "Rechnungbetrag aka Costa Quanta",
+        "emoji": true
+      }
+    }
+  ]
+}
