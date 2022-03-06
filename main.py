@@ -1,11 +1,11 @@
 import json
 import os
 import dynamics as dyn
+import helper
 from dotenv import load_dotenv
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt import App
 from json_blocks import __path__
-from helper import get_eventlist
     
 load_dotenv() 
 app = App(token=os.environ["TOKEN"],signing_secret=os.environ["SIGNING_SECRET"])
@@ -49,7 +49,11 @@ def open_invoice_modal(ack, shortcut, client):
   client.views_open(
         trigger_id=shortcut["trigger_id"],
         # A simple view payload for a modal
-        view = dyn.push_event_list(dyn.create_event_list(["abc","def","xyz"]))
+        view = dyn.push_event_list(
+            dyn.create_event_list(
+                helper.get_eventlist()
+                )
+            )
     )
 
 # Open the invoice modal but this time by pressing the corresponding button
@@ -63,19 +67,37 @@ def open_invoice_modal_from_home(ack, body, client):
     # Open the modal
     client.views_open(
         trigger_id = body["trigger_id"],
-        view = dyn.push_event_list(dyn.create_event_list(get_eventlist()))
+        view = dyn.push_event_list(
+            dyn.create_event_list(
+                helper.get_eventlist()
+                )
+            )
     )
 
 @app.action("static_select-action")
 def handle_selection(ack, body, logger):
     ack()
     
-@app.view("")
-def handle_view_events(ack, body, logger):
+@app.action("users_select-action")
+def handle_some_action(ack, body, logger):
     ack()
+    
+@app.view("invoice")
+def handle_view_events(ack, body, logger, client):
     logger.info(body)
     values: dict = body["view"]["state"]["values"]
-    print(json.dumps(values, indent=4))
+    
+    try:
+        stripped: dict = helper.strip(values)
+    except ValueError as e:
+        errors = {}
+        errors["event_cost"] = e.args[0]
+        ack(response_action="errors",errors=errors)
+        return
+    
+    ack()
+    file = helper.Datafile(stripped["event_name"])
+    file.store(stripped)
 
 # Start your app
 if __name__ == "__main__":

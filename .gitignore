@@ -2,3 +2,12 @@ botEnv/
 __pycache__
 .env
 todo
+
+# LaTeX
+**/*.log
+**/*.aux
+**/*.fdb*
+**/*.out
+**/*.fls
+**/*.gz
+**/*.pdf
