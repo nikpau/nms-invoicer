@@ -11,3 +11,6 @@ todo
 **/*.fls
 **/*.gz
 **/*.pdf
+
+# Database files
+**/*.data
