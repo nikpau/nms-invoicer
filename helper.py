@@ -8,21 +8,30 @@ def strip(values: dict) -> list:
     event_name = values["event_name"]["static_select-action"]\
         ["selected_option"]["text"]["text"]
         
-    event_date = values["event_date"]["datepicker-action"]["selected_date"]
+    invoice_date = values["event_date"]["datepicker-action"]["selected_date"]
     user = values["user"]["users_select-action"]["selected_user"]
-    event_cost = values["event_cost"]["plain_text_input-action"]["value"]
+    cost = values["invoice_cost"]["plain_text_input-action"]["value"]
+    purpose = values["purpose"]["purpose"]["value"]
+    
+    # Capitalize first letter
+    purpose = purpose[0].upper() + purpose[1:]
     
     try:
-        event_cost = float(event_cost)
-    except ValueError:
-        raise ValueError("Ungültiges Format. Bitte Englisches Format oder "
-                         "Ganzzahl nutzen. Bsp: 2 oder 12.69") 
+        cost = float(cost)
+    except:
+        raise ValueError("Wo Sinn? Bitte Ganzzahl oder "
+                         "Englisches Format nutzen. Bsp: 2 oder 12.69") 
+    
+    if str(cost)[::-1].find(".") > 2:
+        raise ValueError("Mehr als zwei Nachkommastellen gibt es "
+                         "nicht amk.")
     
     out = {
-        "event_date": event_date,
-        "event_name": event_name,
-        "event_cost": event_cost,
-        "user"      : user
+        "invoice_date": invoice_date,
+        "event_name"  : event_name,
+        "purpose"     : purpose,
+        "cost"        : cost,
+        "user"        : user
     }
     
     return out
@@ -34,14 +43,14 @@ class Datafile:
         datapath = "db/"
         extension = ".data"
         
-        self.file = datapath + event_name + extension
+        self.filename = datapath + event_name + extension
         
-        if not isfile(self.file):
+        if not isfile(self.filename):
             self.row_counter = 0
-            with open(self.file, "w+"):
+            with open(self.filename, "w+"):
                 pass
 
-        with open(self.file, "r") as f:
+        with open(self.filename, "r") as f:
             self.row_counter = sum(1 for line in f)
 
     def store(self, d: dict) -> None:
@@ -59,15 +68,15 @@ class Datafile:
 
         # Build a header if the file is new
         if self.row_counter == 0:
-            header = ",".join([k for k in d.keys()]) + "\n"
+            header = ",".join([k for k in d.keys()])
         
         # Build row
-        row = ",".join([str(v) for v in d.values()]) + "\n"
+        row = ",".join([str(v) for v in d.values()])
         
         
-        with open(self.file,"a") as file:
+        with open(self.filename,"a") as file:
             if self.row_counter == 0:
-                file.write(header)
-            file.write(row)
+                file.write(header + "\n")
+            file.write(row + "\n")
         
         self.row_counter += 1

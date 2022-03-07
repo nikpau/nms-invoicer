@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Dict
 from copy import deepcopy
 from json_blocks import __path__
@@ -29,7 +30,7 @@ def create_event_list(events: list) -> list:
     
     return out
 
-def push_event_list(json_event_list: str) -> Dict:
+def prepare_modal(json_event_list: str) -> Dict:
     
     file = __path__[0] + "/invoice_modal_greeter.json"
     
@@ -37,6 +38,7 @@ def push_event_list(json_event_list: str) -> Dict:
         obj = json.load(modal)
         
     obj["blocks"][2]["accessory"]["options"] = json_event_list
+    obj["blocks"][3]["accessory"]["initial_date"] = datetime.today().strftime('%Y-%m-%d')
     
     with open(file, "w") as outfile:
         json.dump(obj,outfile)

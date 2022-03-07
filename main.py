@@ -1,7 +1,8 @@
 import json
 import os
 import dynamics as dyn
-import helper
+from inserter import LatexBuilder
+from helper import Datafile, get_eventlist, strip
 from dotenv import load_dotenv
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt import App
@@ -19,7 +20,7 @@ def update_home_tab(client, event, logger):
         home = json.load(file)
     
     try:
-    # views.publish is the method that your app uses to push a view to the Home tab
+    # Push a view to the Home tab
         client.views_publish(
       # the user that opened your app's app home
         user_id=event["user"],
@@ -49,9 +50,9 @@ def open_invoice_modal(ack, shortcut, client):
   client.views_open(
         trigger_id=shortcut["trigger_id"],
         # A simple view payload for a modal
-        view = dyn.push_event_list(
+        view = dyn.prepare_modal(
             dyn.create_event_list(
-                helper.get_eventlist()
+                get_eventlist()
                 )
             )
     )
@@ -67,9 +68,9 @@ def open_invoice_modal_from_home(ack, body, client):
     # Open the modal
     client.views_open(
         trigger_id = body["trigger_id"],
-        view = dyn.push_event_list(
+        view = dyn.prepare_modal(
             dyn.create_event_list(
-                helper.get_eventlist()
+                get_eventlist()
                 )
             )
     )
@@ -82,22 +83,31 @@ def handle_selection(ack, body, logger):
 def handle_some_action(ack, body, logger):
     ack()
     
+@app.action("datepicker-action")
+def handle_some_action(ack, body, logger):
+    ack()    
+    
 @app.view("invoice")
 def handle_view_events(ack, body, logger, client):
     logger.info(body)
     values: dict = body["view"]["state"]["values"]
     
     try:
-        stripped: dict = helper.strip(values)
+        stripped: dict = strip(values)
     except ValueError as e:
         errors = {}
-        errors["event_cost"] = e.args[0]
+        errors["invoice_cost"] = e.args[0]
         ack(response_action="errors",errors=errors)
         return
     
     ack()
-    file = helper.Datafile(stripped["event_name"])
+    file = Datafile(stripped["event_name"])
     file.store(stripped)
+    builder = LatexBuilder(file.filename)
+    builder.set()
+    builder.compile()
+    
+    return
 
 # Start your app
 if __name__ == "__main__":
