@@ -24,7 +24,7 @@ def strip(values: dict, user_id: str) -> list:
     try:
         cost = float(cost)
     except:
-        raise InputError("Wo Sinn? Bitte Ganzzahl oder "
+        raise InputError("Bitte Ganzzahl oder "
                          "Englisches Format nutzen. Bsp: 2 oder 12.69",
                          "invoice_cost") 
     
@@ -52,12 +52,9 @@ class Datafile:
         self.filename = datapath + event_name + extension
         
         if not isfile(self.filename):
-            self.row_counter = 0
+            self.is_new_file = True
             with open(self.filename, "w+"):
                 pass
-
-        with open(self.filename, "r") as f:
-            self.row_counter = sum(1 for line in f)
 
     def store(self, d: dict) -> None:
         """Store a given invoice dict to the event data file.
@@ -67,13 +64,13 @@ class Datafile:
             d (dict): Invoice dict containg:
                         - Event Name
                         - Event Date
-                        - Event Cost
+                        - Invoice Cost
                         - User
             
         """
 
         # Build a header if the file is new
-        if self.row_counter == 0:
+        if self.is_new_file:
             header = ",".join([k for k in d.keys()])
         
         # Build row
@@ -81,8 +78,8 @@ class Datafile:
         
         
         with open(self.filename,"a") as file:
-            if self.row_counter == 0:
+            if self.is_new_file:
                 file.write(header + "\n")
             file.write(row + "\n")
         
-        self.row_counter += 1
+        self.is_new_file = False
