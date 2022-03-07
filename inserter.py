@@ -124,7 +124,7 @@ class LatexBuilder:
             dt.write("NOT IMPLEMENTED")
         
         with open(prefix + "total.tex", "w") as tot:
-            tot.write(self.total)
+            tot.write("\\amount{" + self.total + "}")
             
         self.is_set = True
             
@@ -152,22 +152,16 @@ class LatexBuilder:
         )
         
         if not debug:
-            self.cleanup()
-            
-    def cleanup(self) -> None:
-        
-        wd = os.getcwd()
-        
-        out = wd + "/out/"
-        tex = wd + "/tex/"
-        
-        for dir in [out,tex]:
-            for extension in [".aux", ".log",".out"]:
-                subprocess.check_call([
-                    "rm",
-                    "-f",
-                    f"{dir}*{extension}"
-                ])
+            extensions = ["aux","log","out","gz"]
+            for extension in extensions:
+                subprocess.check_call(
+                    ["find",
+                     ".",
+                     "-name"
+                     ,f"*.{extension}",
+                     "-type",
+                     "f",
+                     "-delete"])
             
             
     # Construct a list entry formatted as tabularx
