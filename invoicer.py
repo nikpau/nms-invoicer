@@ -12,7 +12,6 @@ from json_blocks import __path__
 load_dotenv() 
 app = App(token=os.environ["TOKEN"],signing_secret=os.environ["SIGNING_SECRET"])
 
-# Add functionality here
 @app.event("app_home_opened")
 def update_home_tab(client, event, logger):
     
@@ -21,12 +20,10 @@ def update_home_tab(client, event, logger):
         home = json.load(file)
     
     try:
-    # Push a view to the Home tab
         client.views_publish(
-      # the user that opened your app's app home
-        user_id=event["user"],
-      # the view object that appears in the app home
-        view = json.dumps(home))
+            user_id=event["user"],
+            view = json.dumps(home)
+        )
   
     except Exception as e:
         logger.error(f"Error publishing home tab: {e}")
@@ -38,7 +35,6 @@ def event_test(say):
 
 @app.message("")
 def message_hello(message, say):
-    # say() sends a message to the channel where the event was triggered
     user = message["user"]
     say(text=f"Hey there <@{user}>!")
 
@@ -62,10 +58,7 @@ def open_invoice_modal(ack, shortcut, client):
 # in the home tab
 @app.action("home-submit-button")
 def open_invoice_modal_from_home(ack, body, client):
-    
-    # Ackowledge the incoming request
     ack()
-    
     # Open the modal
     client.views_open(
         trigger_id = body["trigger_id"],
