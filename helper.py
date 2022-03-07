@@ -1,30 +1,36 @@
 from os.path import isfile
+from datetime import datetime
+
+class InputError(Exception):
+    pass
 
 def get_eventlist()-> list[str]:
     return ["foo","bar","baz"]
 
-def strip(values: dict) -> list:
+def strip(values: dict, user_id: str) -> list:
     
     event_name = values["event_name"]["static_select-action"]\
         ["selected_option"]["text"]["text"]
         
-    invoice_date = values["event_date"]["datepicker-action"]["selected_date"]
-    user = values["user"]["users_select-action"]["selected_user"]
+    invoice_date = values["event_date"]["invoice-date-select"]["selected_date"]
+    user = user_id
     cost = values["invoice_cost"]["plain_text_input-action"]["value"]
     purpose = values["purpose"]["purpose"]["value"]
     
     # Capitalize first letter
     purpose = purpose[0].upper() + purpose[1:]
     
+    
     try:
         cost = float(cost)
     except:
-        raise ValueError("Wo Sinn? Bitte Ganzzahl oder "
-                         "Englisches Format nutzen. Bsp: 2 oder 12.69") 
+        raise InputError("Wo Sinn? Bitte Ganzzahl oder "
+                         "Englisches Format nutzen. Bsp: 2 oder 12.69",
+                         "invoice_cost") 
     
     if str(cost)[::-1].find(".") > 2:
-        raise ValueError("Mehr als zwei Nachkommastellen gibt es "
-                         "nicht amk.")
+        raise InputError("Mehr als zwei Nachkommastellen gibt es "
+                         "nicht amk.", "invoice_cost")
     
     out = {
         "invoice_date": invoice_date,

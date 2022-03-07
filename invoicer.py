@@ -2,7 +2,8 @@ import json
 import os
 import dynamics as dyn
 from inserter import LatexBuilder
-from helper import Datafile, get_eventlist, strip
+from datetime import datetime
+from helper import Datafile, get_eventlist, strip, InputError
 from dotenv import load_dotenv
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt import App
@@ -83,20 +84,35 @@ def handle_selection(ack, body, logger):
 def handle_some_action(ack, body, logger):
     ack()
     
-@app.action("datepicker-action")
-def handle_some_action(ack, body, logger):
-    ack()    
+@app.action("invoice-date-select")
+def handle_datepicker(ack, body, logger):
+
+    invoice_date = body["actions"][0]["selected_date"]
+    # Check if selected date lies in the future
+    today = datetime.today()
+    to_check = datetime.strptime(invoice_date,"%Y-%m-%d")
+    if today < to_check:
+        #raise InputError("Du kannst keine Rechnungen aus der "
+        #                  "Zukunft einreichen.", "event_date")
+        errors = {}
+        errors["invoice-date-select"] = ("Du kannst keine Rechnungen aus der "
+                                         "Zukunft einreichen.")
+        ack(response_action="errors",errors=errors)
+    else:
+        ack()
+    return
     
 @app.view("invoice")
 def handle_view_events(ack, body, logger, client):
-    logger.info(body)
+    
     values: dict = body["view"]["state"]["values"]
+    user: str = body["user"]["id"]
     
     try:
-        stripped: dict = strip(values)
-    except ValueError as e:
+        stripped: dict = strip(values, user)
+    except InputError as e:
         errors = {}
-        errors["invoice_cost"] = e.args[0]
+        errors[e.args[1]] = e.args[0]
         ack(response_action="errors",errors=errors)
         return
     
