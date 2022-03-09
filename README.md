@@ -2,11 +2,24 @@
 
 Welcome to the Invoicer. This is a spending tracker bot that lets you enter spendings for a project or event using a modal dialog. After the submission of the spending data a formatted LaTeX report is automatically generated or updated, depending whether the report for the given event already existed or not. 
 
+## Using the bot
+
+To be able to use the bot yourself you need a valid Token and Signing Secret which you can acquire by creating a custom Slack App [here](https://api.slack.com/apps). As this App runs in *Socket Mode* make sure to enable it in your app settings.
+
+The tokens are stored in a `.env` file located in the main directory and contains three variables:
+
+```
+TOKEN=xoxb-***
+SOCKET_TOKEN=xapp-****
+SIGNING_SECRET=****
+```
+The environment variables get loaded automatically from the file using the `load_dotenv()` function from the `dotenv` package. 
+
 ## Blueprint
 
 [logo]: https://github.com/nikpau/nms-invoicer/blob/main/doc/img/modal.png
 
-Upon pressing the corresponding button you will be greeted with this modal: 
+Upon pressing the corresponding (and only) button from the Bots' homepage you will be greeted with this modal: 
 
 ![modal][logo]
 
@@ -14,7 +27,7 @@ Before the modal is constructed the `get_eventlist()` function in the `helper.py
 
 ### Basic input checks
 
-Currently there exists some basic input checking only for the `Wie viel Geld hast du ausgegeben?` field, which checks for any non-integer inputs as well as the number of decimal places of the entered amount. 
+Currently there exists some basic input checking only for the `Wie viel Geld hast du ausgegeben?` field, which checks for any non-integer/non-float inputs as well as the number of decimal places of the entered amount. 
 
 > TODO: At the moment it is possible to enter submission dates that lie in the future. This needs to be fixed. 
 
