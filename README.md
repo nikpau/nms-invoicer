@@ -27,7 +27,7 @@ Before the modal is constructed the `get_eventlist()` function in the `helper.py
 
 ### Basic input checks
 
-Currently there exists some basic input checking only for the `Wie viel Geld hast du ausgegeben?` field, which checks for any non-integer inputs as well as the number of decimal places of the entered amount. 
+Currently there exists some basic input checking only for the `Wie viel Geld hast du ausgegeben?` field, which checks for any non-integer/non-float inputs as well as the number of decimal places of the entered amount. 
 
 > TODO: At the moment it is possible to enter submission dates that lie in the future. This needs to be fixed. 
 
