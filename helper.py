@@ -1,4 +1,6 @@
+import os
 from os.path import isfile
+from os.path import isdir
 from datetime import datetime
 
 class InputError(Exception):
@@ -50,6 +52,9 @@ class Datafile:
         extension = ".data"
         
         self.filename = datapath + event_name + extension
+        
+        if not isdir(datapath):
+            os.mkdir(datapath)
         
         if not isfile(self.filename):
             self.is_new_file = True
