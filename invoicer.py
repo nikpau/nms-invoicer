@@ -1,20 +1,28 @@
 import json
 import os
+from typing import Callable
 import dynamics as dyn
 from inserter import LatexBuilder
 from datetime import datetime
-from helper import Datafile, get_eventlist, strip, InputError
+from helper import Datafile, get_event_data, strip, InputError
 from dotenv import load_dotenv
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt import App
 from json_blocks import __path__
     
 load_dotenv() 
+
 app = App(token=os.environ["TOKEN"],signing_secret=os.environ["SIGNING_SECRET"])
+
+# Declare the event data dict which will be filled once the home-tab
+# of the bot is opened
+EVENT_DATA: dict
 
 @app.event("app_home_opened")
 def update_home_tab(client, event, logger):
     
+    global EVENT_DATA
+
     # Parse the home_tab_view json file
     with open(__path__[0] + "/home_tab_view.json", "r") as file:
         home = json.load(file)
@@ -27,6 +35,11 @@ def update_home_tab(client, event, logger):
   
     except Exception as e:
         logger.error(f"Error publishing home tab: {e}")
+
+    # Pull the event data from the endpoint
+    EVENT_DATA = get_event_data()
+    
+    return
 
 # Say something upon mentioning the bot
 @app.event("app_mention")
@@ -49,7 +62,7 @@ def open_invoice_modal(ack, shortcut, client):
         # A simple view payload for a modal
         view = dyn.prepare_modal(
             dyn.create_event_list(
-                get_eventlist()
+                get_event_data()
                 )
             )
     )
@@ -64,21 +77,22 @@ def open_invoice_modal_from_home(ack, body, client):
         trigger_id = body["trigger_id"],
         view = dyn.prepare_modal(
             dyn.create_event_list(
-                get_eventlist()
+                get_event_data()
                 )
             )
     )
 
-@app.action("static_select-action")
-def handle_selection(ack, body, logger):
+@app.action("event-selection")
+def handle_selection(ack, body):
     ack()
     
 @app.action("users_select-action")
-def handle_some_action(ack, body, logger):
+def handle_some_action(ack, body):
     ack()
+
     
 @app.action("invoice-date-select")
-def handle_datepicker(ack, body, logger):
+def handle_datepicker(ack, body):
 
     invoice_date = body["actions"][0]["selected_date"]
     # Check if selected date lies in the future
@@ -91,12 +105,13 @@ def handle_datepicker(ack, body, logger):
         errors["invoice-date-select"] = ("Du kannst keine Rechnungen aus der "
                                          "Zukunft einreichen.")
         ack(response_action="errors",errors=errors)
+        return
     else:
         ack()
     return
     
 @app.view("invoice")
-def handle_view_events(ack, body, logger, client):
+def handle_view_events(ack, body, client):
     
     values: dict = body["view"]["state"]["values"]
     user: str = body["user"]["id"]
@@ -112,7 +127,8 @@ def handle_view_events(ack, body, logger, client):
     ack()
     file = Datafile(stripped["event_name"])
     file.store(stripped)
-    builder = LatexBuilder(file.filename)
+    
+    builder = LatexBuilder(file.filename,file.event_date)
     builder.set()
     builder.compile()
     

@@ -6,7 +6,7 @@ from json_blocks import __path__
 
 # Create a json string with all current nms events in it
 # in order to be available drop-down options in the modal
-def create_event_list(events: list) -> list:
+def create_event_list(eventdata: dict) -> list[dict]:
     
     # Basic Slack conform dropdown layout
     base = {
@@ -19,13 +19,15 @@ def create_event_list(events: list) -> list:
     }
     
     out = []
+    names = eventdata["names"]
+    slugs = eventdata["slugs"]
     
     # Create a json object of shape 'base' for 
     # every event in our list
-    for idx, event in enumerate(events):
+    for idx, event in enumerate(names):
         tmp = deepcopy(base)
         tmp["text"]["text"] = str(event)
-        tmp["value"] = "value-" + str(idx)
+        tmp["value"] = slugs[idx]
         out.append(tmp)
     
     return out

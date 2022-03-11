@@ -1,6 +1,5 @@
 import subprocess
 import os
-from time import sleep
 from datetime import datetime
 from os.path import isdir
 
@@ -11,7 +10,7 @@ class NotSetError(Exception):
     pass
 
 class LatexBuilder:
-    def __init__(self, datafile: str) -> None:
+    def __init__(self, datafile: str, event_date: str) -> None:
         """Initialize a Latex Builder Object 
         from a given data file path. 
         
@@ -35,6 +34,7 @@ class LatexBuilder:
                                      "Can only generate LatexBuilder from '.data' files.")
         
         self.data_size = 0
+        self.event_date = event_date
         
         # Indicate wether the 'set()' method has
         # already been called and the data is ready
@@ -117,11 +117,12 @@ class LatexBuilder:
         cost_list.close()
         
         # Write event name
+        event_name_to_print = self.event_name.split("_")[0]
         with open(prefix + "eventname.tex", "w") as ev:
-            ev.write(self.event_name[0].upper() + self.event_name[1:])
+            ev.write(event_name_to_print.capitalize())
             
         with open(prefix + "eventdate.tex", "w") as dt:
-            dt.write("NOT IMPLEMENTED")
+            dt.write(self.event_date)
         
         with open(prefix + "total.tex", "w") as tot:
             tot.write("\\amount{" + self.total + "}")
@@ -139,6 +140,8 @@ class LatexBuilder:
         
         if not isdir(output_dir):
             os.mkdir(output_dir)
+            
+        jobname = self.event_name.replace("_","-")
         
         # Write to pdf using pdflatex
         subprocess.check_call(
@@ -146,10 +149,11 @@ class LatexBuilder:
                 "pdflatex", 
                 "-interaction=batchmode",
                 f"-output-directory={output_dir}",
-                f"-jobname={self.event_name}",
+                f"-jobname={jobname}",
                 f"{tex_dir}main.tex"
             ]
         )
+            
         
         if not debug:
             extensions = ["aux","log","out","gz"]
@@ -167,8 +171,7 @@ class LatexBuilder:
     # Construct a list entry formatted as tabularx
     @staticmethod
     def build_list_entry(purpose: str, date: str, price: str) -> str:
-        l = purpose + "&" + date + "&\\amount{" + str(price) + "}\\" + "\\"
-        return l
+        return purpose + "&" + date + "&\\amount{" + str(price) + "}\\" + "\\"
 
     # Importing numpy just for an argsort seems to much
     # Therefore a quick impl in base python
