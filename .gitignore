@@ -1,6 +1,7 @@
 botEnv/
 __pycache__
 .env
+.venv
 todo
 
 # LaTeX
