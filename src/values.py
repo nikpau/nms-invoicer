@@ -13,4 +13,6 @@ class Events(AutoName):
     INVOICE_SELECT_EVENT = auto()
     INVOICE_SELECT_AMOUNT = auto()
     INVOICE_SELECT_DESCRIPTION = auto()
-    APP_HOME_OPENED = auto
+    APP_HOME_OPENED = auto()
+    START_INVOICE_SUBMISSION = "rechnung-einreichen"
+    ASK_FOR_FILE = "Lad Rechnung Hoch!"

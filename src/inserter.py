@@ -2,7 +2,6 @@ import subprocess
 import os
 from datetime import datetime
 from os.path import isdir
-from typing import TypeVar
 
 class InvalidFormatError(Exception):
     pass

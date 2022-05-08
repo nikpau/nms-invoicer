@@ -18,9 +18,8 @@ EVENT_DATA: dict
 
 app.event("app_home_opened")(controllers.setup_home_tab)
 
-# Open the invoice modal via its global shortcut
-app.global_shortcut(Events.OPEN_HOME_BUTTON.value)(controllers.open_invoice_modal_from_shortcut)
-
+# Begin the invoice submission process from its global shortcut
+app.global_shortcut(Events.START_INVOICE_SUBMISSION.value)(controllers.open_invoice_modal_from_shortcut)
 
 # Open the invoice modal but this time by pressing the corresponding button
 # in the home tab
@@ -34,7 +33,6 @@ def handle_selection(ack, body):
 def handle_some_action(ack, body):
     ack()
 
-    
 @app.action("invoice-date-select")
 def handle_datepicker(ack, body):
 
@@ -55,6 +53,8 @@ def handle_datepicker(ack, body):
     return
     
 app.view(Events.INVOICE.value)(controllers.handle_invoice_submission)
+
+app.event("message")(controllers.save_uploaded_invoice)
 
 # Start your app
 if __name__ == "__main__":
