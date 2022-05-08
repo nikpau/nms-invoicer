@@ -107,7 +107,7 @@ class LatexBuilder:
     # Construct a list entry formatted as tabularx
     @staticmethod
     def build_list_entry(invoice: Invoice) -> str:
-        return f"{invoice.purpose} & {invoice.date.strftime('%Y.%m.%d')} &\\amount{invoice.cost:.2f}\\ \\"
+        return f"{invoice.purpose}&{invoice.date.strftime('%Y.%m.%d')}&\\amount{{{invoice.cost:.2f}}}\\\\"
 
     # Importing numpy just for an argsort seems to much
     # Therefore a quick impl in base python
