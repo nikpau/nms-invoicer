@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 requests = "*"
 slack-bolt = "*"
+python-dotenv = "*"
+dataclasses-json = "*"
 
 [dev-packages]
 mypy = "*"
