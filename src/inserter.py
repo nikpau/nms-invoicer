@@ -110,12 +110,12 @@ class LatexBuilder:
         self.sort_by_date()
         self.pad_prices()
 
-        # Open file to write all submitted invoices one per line
-        cost_list = open(prefix + "tableitems.tex", "w")
         invoice = zip(self.data["purpose"],
                       self.data["invoice_date"],
                       self.data["cost"])
-
+        
+        # Open file to write all submitted invoices one per line
+        cost_list = open(prefix + "tableitems.tex", "w")
         for _ in range(self.data_size):
             line = self.build_list_entry(*next(invoice))
             cost_list.write(line + "\n")
