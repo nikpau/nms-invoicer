@@ -1,11 +1,8 @@
-import json
-
-from slack_bolt import App
-from helper import Datafile, strip
+from helper import extract_invoice
 from inserter import LatexBuilder
+from storage import read_invoices, write_invoices
 import templates
 from api import get_events
-
 
 class InputError(Exception):
     pass
@@ -17,9 +14,7 @@ def setup_home_tab(client, event, logger):
         )
 
 def open_invoice_modal_from_shortcut(ack, shortcut, client):
-  
   ack()
-  
   client.views_open(
         trigger_id=shortcut["trigger_id"],
         # A simple view payload for a modal
@@ -35,12 +30,11 @@ def open_invoice_modal_from_home(ack, body, client):
     )
   
 def handle_invoice_submission(ack, body, client):
-    
     values: dict = body["view"]["state"]["values"]
     user: str = body["user"]["id"]
     
     try:
-        stripped: dict = strip(values, user)
+        invoice = extract_invoice(values, user)
     except InputError as e:
         errors = {}
         errors[e.args[1]] = e.args[0]
@@ -48,10 +42,17 @@ def handle_invoice_submission(ack, body, client):
         return
     
     ack()
-    file = Datafile(stripped["event_name"])
-    file.store(stripped)
-    
-    builder = LatexBuilder(file.filename,file.date_of_event)
+
+    try:
+      invoices = read_invoices(invoice.event_slug)
+    except:
+      invoices = []
+
+    invoices.append(invoice)
+    write_invoices(invoice.event_slug, invoices)
+
+    events = get_events()
+    builder = LatexBuilder(events[invoice.event_slug], invoices)
     builder.set().compile()
     
     return

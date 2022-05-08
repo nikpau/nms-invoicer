@@ -37,7 +37,6 @@ def handle_some_action(ack, body):
     
 @app.action("invoice-date-select")
 def handle_datepicker(ack, body):
-
     invoice_date = body["actions"][0]["selected_date"]
     # Check if selected date lies in the future
     today = datetime.today()
