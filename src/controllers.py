@@ -51,7 +51,7 @@ def handle_invoice_submission(ack, body, client):
     file = Datafile(stripped["event_name"])
     file.store(stripped)
     
-    builder = LatexBuilder(file.filename,file.event_date)
+    builder = LatexBuilder(file.filename,file.date_of_event)
     builder.set().compile()
     
     return

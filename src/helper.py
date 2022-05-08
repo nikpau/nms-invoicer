@@ -1,24 +1,25 @@
-from collections import namedtuple
 from datetime import datetime
 import os
-from typing import Any, Dict, Tuple
+from values import Events
+from typing import Dict
 import requests
 import json
+from api import get_events
 from os.path import isfile
 from os.path import isdir
 
 class InputError(Exception):
     pass
 
-def strip(values: dict, user_id: str) -> list:
+def strip(v: dict, user_id: str) -> Dict[str,float]:
     
-    event_name = values["event_name"]["event-selection"]\
+    event_name = v[Events.INVOICE_SELECT_EVENT.value][Events.INVOICE_SELECT_EVENT.value]\
         ["selected_option"]["text"]["text"]
         
-    invoice_date = values["event_date"]["invoice-date-select"]["selected_date"]
+    invoice_date = v[Events.INVOICE_SELECT_DATE.value][Events.INVOICE_SELECT_DATE.value]["selected_date"]
     user = user_id
-    cost = values["invoice_cost"]["plain_text_input-action"]["value"]
-    purpose = values["purpose"]["purpose"]["value"]
+    cost = v[Events.INVOICE_SELECT_AMOUNT.value]["plain_text_input-action"]["value"]
+    purpose = v[Events.INVOICE_SELECT_DESCRIPTION.value]["purpose"]["value"]
     
     # Capitalize first letter
     purpose = purpose[0].upper() + purpose[1:]
@@ -48,7 +49,7 @@ def strip(values: dict, user_id: str) -> list:
 
                 
 class Datafile:
-    def __init__(self, event_name: str) -> None:
+    def __init__(self, event_name) -> None:
         
         datapath = "db/"
         extension = ".data"
@@ -57,7 +58,7 @@ class Datafile:
         self.is_new_file = False
         
         self.filename = datapath + event_name + extension
-        self.event_date = self.event_date()
+        self.date_of_event = get_events()[event_name]["date"]
         
         if not isdir(datapath):
             os.mkdir(datapath)
@@ -78,7 +79,7 @@ class Datafile:
         Returns:
             _type_: date of event as YYYY-MM-DD
         """
-        date = self.event_name.split("_")[1]
+        date = self.date_of_event
         date = datetime.strptime(date,"%Y-%m-%d")
         date = datetime.strftime(date, "%d.%m.%Y")
         
