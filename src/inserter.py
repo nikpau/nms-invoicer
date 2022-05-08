@@ -1,9 +1,8 @@
 from models import Event
 import subprocess
 import os
-from datetime import datetime, date
 from os.path import isdir
-from typing import List, TypeVar
+from typing import List
 
 from helper import Invoice
 

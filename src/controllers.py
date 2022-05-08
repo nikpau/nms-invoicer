@@ -1,8 +1,14 @@
+import requests
+from slack import WebClient
+from slack_bolt import App
+
+import templates
+from api import get_events
 from helper import extract_invoice
 from inserter import LatexBuilder
 from storage import read_invoices, write_invoices
-import templates
-from api import get_events
+from values import Events
+
 
 class InputError(Exception):
     pass
@@ -13,7 +19,7 @@ def setup_home_tab(client, event, logger):
             view = templates.home_view_template()
         )
 
-def open_invoice_modal_from_shortcut(ack, shortcut, client):
+def open_invoice_modal_from_shortcut(ack, shortcut, client: WebClient):
   ack()
   client.views_open(
         trigger_id=shortcut["trigger_id"],
@@ -29,7 +35,7 @@ def open_invoice_modal_from_home(ack, body, client):
         view = templates.invoice_submit_template(get_events())
     )
   
-def handle_invoice_submission(ack, body, client):
+def handle_invoice_submission(ack, body, client: WebClient):
     values: dict = body["view"]["state"]["values"]
     user: str = body["user"]["id"]
     
@@ -56,3 +62,16 @@ def handle_invoice_submission(ack, body, client):
     builder.set().compile()
     
     return
+
+def ask_for_file(user_id: str, client: WebClient):
+    client.chat_postMessage(
+        channel=user_id,
+        text=Events.ASK_FOR_FILE.value
+    )
+    
+# TODO Save file somewhere
+def save_uploaded_invoice(client: WebClient, body):
+    file_url = body["event"]["files"][0]["url_private_downloads"]
+    
+    file = requests.get(file_url).content
+    
